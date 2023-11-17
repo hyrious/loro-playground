@@ -1,0 +1,17 @@
+{
+  "name": "loro-playground",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "esbuild-dev server.ts"
+  },
+  "dependencies": {
+    "loro-crdt": "^0.4.3",
+    "uint8array-extras": "^0.5.1"
+  },
+  "devDependencies": {
+    "@hyrious/esbuild-dev": "^0.10.4",
+    "@types/node": "18.x",
+    "esbuild": "^0.19.5"
+  }
+}
