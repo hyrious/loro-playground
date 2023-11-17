@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "esbuild-dev server.ts"
+    "dev": "esbuild-dev server.ts",
+    "build": "esbuild-dev server.ts build"
   },
   "dependencies": {
     "loro-crdt": "^0.4.3",

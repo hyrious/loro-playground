@@ -1,8 +1,10 @@
 import { createServer, IncomingMessage, ServerResponse } from 'node:http'
 import { isAbsolute, join } from 'node:path'
-import { readFile } from 'fs/promises'
+import { readFile, rm, stat } from 'fs/promises'
 import { context } from 'esbuild'
 import { Loro } from 'loro-crdt'
+
+const isBuild = process.argv[2] === 'build'
 
 const doc = new Loro
 
@@ -18,13 +20,16 @@ const binread = (req: IncomingMessage) => new Promise<Uint8Array>((resolve, reje
   req.on('error', reject)
 })
 
+await rm('main.js', { force: true })
+
 const ctx = await context({
   entryPoints: ['main.ts'],
   bundle: true,
   format: 'esm',
   outdir: '.',
-  write: false,
-  sourcemap: true,
+  write: isBuild,
+  minify: isBuild,
+  sourcemap: !isBuild,
   plugins: [{
     name: 'wasm',
     setup({ onResolve, onLoad }) {
@@ -84,6 +89,14 @@ const ctx = await context({
     }
   }]
 })
+
+if (isBuild) {
+  await ctx.rebuild()
+  await ctx.dispose()
+  const { size } = await stat('main.js')
+  console.log('[build]', `${(size / 1024).toFixed(2)} kB`)
+  process.exit()
+}
 
 await ctx.serve({ servedir: '.' })
 
